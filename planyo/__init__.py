@@ -278,4 +278,4 @@ class InvalidHashKeyException(Exception):
     """
 
 
-__all__ = ('Planyo',)
+__all__ = ('Planyo', 'ServerConnectionLostException', 'InvalidHashKeyException')
