@@ -215,7 +215,21 @@ class Planyo(object):
         return md5(f'{self.hash_key}{ts}{method}'.encode()).hexdigest()
 
     def _wrapper(self, method):
+        """
+        Wrapper to implement all methods dynamically
+
+        :param method: Function name
+        :return: Function to request Planyo API with the desired method
+        """
         def perform_request(params=None, is_hash_enabled=False, retry=3):
+            """
+            Requests for Planyo API
+
+            :param params: Dict with arguments to request `method`
+            :param is_hash_enabled: Enable hash key for security
+            :param retry: Aux value to retry requests
+            :return: Response from Planyo API
+            """
             args = dict(method=method, api_key=self.api_key)
             if is_hash_enabled:
                 ts = int(datetime.utcnow().timestamp())
@@ -242,6 +256,12 @@ class Planyo(object):
         return perform_request
 
     def __getattr__(self, item):
+        """
+        Method overwrite for dynamic API methods
+
+        :param item: method name
+        :return: Function to request Planyo API with the desired method
+        """
         if item in self.methods:
             return self._wrapper(method=item)
 
