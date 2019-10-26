@@ -247,7 +247,7 @@ class Planyo(object):
                 response = requests.post(self.endpoint, data=params)
             except (requests.ReadTimeout, requests.ConnectTimeout, requests.ConnectionError):
                 if retry > 0:
-                    return self._perform_request(params, is_hash_enabled, retry=retry - 1)
+                    return self._perform_request(params, retry=retry - 1)
 
                 raise ServerConnectionLostException
 
