@@ -1,7 +1,7 @@
 import unittest
 from random import choice
 
-from planyo import Planyo, InvalidHashKeyException
+from planyo import Planyo
 
 
 class PlanyoTests(unittest.TestCase):
@@ -21,9 +21,6 @@ class PlanyoTests(unittest.TestCase):
         self.assertEqual('fcec20584eef39f4f565a3273f56b33f', self.client._get_hash_key('1572051750', 'api_test'))
 
         del self.client.hash_key
-
-    def test_hash_key_exception(self):
-        self.assertRaises(InvalidHashKeyException, self.client.api_test, is_hash_enabled=True)
 
     def test_valid_request(self):
         response = {

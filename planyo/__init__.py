@@ -23,12 +23,12 @@ class Planyo(object):
     It is highly recommended to checks docs for params received by any method. Just pass a dictionary in `params` with
     all desired arguments.
 
-      >>> client.list_translations(params=dict(language='IT'))
+      >>> client.api_test(params=dict(language='IT'))
 
     Hash key is also supported, in this case the instance needs to be initialized with the secret hash key from Planyo
 
       >>> client = Planyo(api_key='ABC', hash_key='DEF')
-      >>> client.list_translations(is_hash_enabled=True)
+      >>> client.api_test()
     """
 
     endpoint = "https://api.planyo.com/rest/"
@@ -215,8 +215,6 @@ class Planyo(object):
         :param method: Function name
         :return: MD5 hash
         """
-        if not self.hash_key:
-            raise InvalidHashKeyException
         return md5('{hash_key}{ts}{method}'.format(hash_key=self.hash_key, ts=ts, method=method).encode()).hexdigest()
 
     def _wrapper(self, method):
@@ -227,17 +225,16 @@ class Planyo(object):
         :return: Function to request Planyo API with the desired method
         """
 
-        def perform_request(params=None, is_hash_enabled=False, retry=3):
+        def perform_request(params=None, retry=3):
             """
             Requests for Planyo API
 
             :param params: Dict with arguments to request `method`
-            :param is_hash_enabled: Enable hash key for security
             :param retry: Aux value to retry requests
             :return: Response from Planyo API
             """
             args = dict(method=method, api_key=self.api_key)
-            if is_hash_enabled:
+            if self.hash_key:
                 ts = int(time())
                 args.update(hash_timestamp=ts, hash_key=self._get_hash_key(ts, method))
 
@@ -278,10 +275,4 @@ class ServerConnectionLostException(Exception):
     """
 
 
-class InvalidHashKeyException(Exception):
-    """
-    Invalid Hash Key provided
-    """
-
-
-__all__ = ('Planyo', 'ServerConnectionLostException', 'InvalidHashKeyException')
+__all__ = ('Planyo', 'ServerConnectionLostException')
