@@ -1,6 +1,11 @@
-from datetime import datetime
 from hashlib import md5
-from json import JSONDecodeError
+from time import time
+
+try:
+    # noinspection PyProtectedMember
+    from json import JSONDecodeError
+except ImportError:
+    JSONDecodeError = ValueError
 
 import requests
 
@@ -212,7 +217,7 @@ class Planyo(object):
         """
         if not self.hash_key:
             raise InvalidHashKeyException
-        return md5(f'{self.hash_key}{ts}{method}'.encode()).hexdigest()
+        return md5('{hash_key}{ts}{method}'.format(hash_key=self.hash_key, ts=ts, method=method).encode()).hexdigest()
 
     def _wrapper(self, method):
         """
@@ -221,6 +226,7 @@ class Planyo(object):
         :param method: Function name
         :return: Function to request Planyo API with the desired method
         """
+
         def perform_request(params=None, is_hash_enabled=False, retry=3):
             """
             Requests for Planyo API
@@ -232,7 +238,7 @@ class Planyo(object):
             """
             args = dict(method=method, api_key=self.api_key)
             if is_hash_enabled:
-                ts = int(datetime.utcnow().timestamp())
+                ts = int(time())
                 args.update(hash_timestamp=ts, hash_key=self._get_hash_key(ts, method))
 
             if params:
