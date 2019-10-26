@@ -199,13 +199,15 @@ class Planyo(object):
         'set_translation'
     )
 
-    def __init__(self, api_key, hash_key=None):
+    def __init__(self, api_key, hash_key=None, endpoint=None):
         """
         :param api_key: Planyo API key
         :param hash_key: Planyo secret hash key
         """
         self.api_key = api_key
         self.hash_key = hash_key
+        if endpoint:
+            self.endpoint = endpoint
 
     def _get_hash_key(self, ts, method):
         """
