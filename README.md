@@ -37,7 +37,7 @@ all desired arguments.
 from planyo import Planyo
 
 client = Planyo(api_key='ABC')
-client.list_translations(params=dict(language='IT'))
+client.api_test(params=dict(language='IT'))
 ```
 
 Hash key is also supported, in this case the instance needs to be initialized with the secret hash key from Planyo
@@ -46,8 +46,9 @@ Hash key is also supported, in this case the instance needs to be initialized wi
 from planyo import Planyo
 
 client = Planyo(api_key='ABC', hash_key='DEF')
-client.list_translations(is_hash_enabled=True)
+client.api_test()
 ```
+
 
 ### Tests
 
