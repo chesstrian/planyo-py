@@ -16,6 +16,8 @@ Python 2.7+ or 3
 
 ```bash
 pip install -e git+https://github.com/chesstrian/planyo-py.git#egg=planyo
+# or, for private repos:
+pip install -e git+git@github.com:chesstrian/planyo-py.git#egg=planyo
 ```
 
 
