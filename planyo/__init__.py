@@ -251,7 +251,7 @@ class Planyo(object):
                 if retry > 0:
                     return perform_request(params, retry=retry - 1)
 
-                raise ServerConnectionLostException
+                raise requests.ConnectionError()
 
             try:
                 r_json = response.json()
@@ -262,17 +262,20 @@ class Planyo(object):
             if response_code == 0:
                 return r_json
             elif response_code == 1:
-                raise InvalidApiKeyException
+                response.status_code = 401
+                raise requests.HTTPError(response=response)
             elif response_code == 3:
-                raise InvalidInputDataException
+                raise ValueError('Invalid input data.')
             elif response_code == 4:
-                raise MethodError
+                raise ValueError('Other method error, please check method documentation or contact support.')
             elif response_code == 5:
-                raise RateLimitExceededException
+                response.status_code = 429
+                raise requests.HTTPError(response=response)
             elif response_code == 6:
-                raise FatalError
+                response.status_code = 500
+                raise requests.HTTPError(response=response)
             else:
-                raise UnsupportedResponseCodeException
+                raise Exception('Response code not handled, please check documentation and update this implementation accordingly.')
 
         return perform_request
 
@@ -287,50 +290,4 @@ class Planyo(object):
             return self._wrapper(method=item)
 
 
-class ServerConnectionLostException(Exception):
-    """
-    Planyo API Server is Down
-    """
-
-
-class InvalidApiKeyException(Exception):
-    """
-    Invalid API Key or Invalid Method.
-
-    If API Key is valid please check the method is still supported, currently only valid methods are requested otherwise
-    it raises TypeError.
-    """
-
-
-class InvalidInputDataException(Exception):
-    """
-    Invalid input data for user method.
-    """
-
-
-class MethodError(Exception):
-    """
-    Other method error, please check method documentation or contact support.
-    """
-
-
-class RateLimitExceededException(Exception):
-    """
-    API Over usage.
-    """
-
-
-class FatalError(Exception):
-    """
-    Server fatal error.
-    """
-
-
-class UnsupportedResponseCodeException(Exception):
-    """
-    Response code not handled, please check documentation and update this implementation accordingly.
-    """
-
-
-__all__ = ('Planyo', 'ServerConnectionLostException', 'InvalidApiKeyException', 'InvalidInputDataException',
-           'MethodError', 'RateLimitExceededException', 'FatalError', 'UnsupportedResponseCodeException')
+__all__ = ('Planyo')
