@@ -254,9 +254,25 @@ class Planyo(object):
                 raise ServerConnectionLostException
 
             try:
-                return response.json()
+                r_json = response.json()
             except JSONDecodeError as e:
                 raise e
+
+            response_code = r_json.get('response_code')
+            if response_code == 0:
+                return r_json
+            elif response_code == 1:
+                raise InvalidApiKeyException
+            elif response_code == 3:
+                raise InvalidInputDataException
+            elif response_code == 4:
+                raise MethodError
+            elif response_code == 5:
+                raise RateLimitExceededException
+            elif response_code == 6:
+                raise FatalError
+            else:
+                raise UnsupportedResponseCodeException
 
         return perform_request
 
@@ -277,4 +293,44 @@ class ServerConnectionLostException(Exception):
     """
 
 
-__all__ = ('Planyo', 'ServerConnectionLostException')
+class InvalidApiKeyException(Exception):
+    """
+    Invalid API Key or Invalid Method.
+
+    If API Key is valid please check the method is still supported, currently only valid methods are requested otherwise
+    it raises TypeError.
+    """
+
+
+class InvalidInputDataException(Exception):
+    """
+    Invalid input data for user method.
+    """
+
+
+class MethodError(Exception):
+    """
+    Other method error, please check method documentation or contact support.
+    """
+
+
+class RateLimitExceededException(Exception):
+    """
+    API Over usage.
+    """
+
+
+class FatalError(Exception):
+    """
+    Server fatal error.
+    """
+
+
+class UnsupportedResponseCodeException(Exception):
+    """
+    Response code not handled, please check documentation and update this implementation accordingly.
+    """
+
+
+__all__ = ('Planyo', 'ServerConnectionLostException', 'InvalidApiKeyException', 'InvalidInputDataException',
+           'MethodError', 'RateLimitExceededException', 'FatalError', 'UnsupportedResponseCodeException')
