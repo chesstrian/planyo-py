@@ -262,16 +262,23 @@ class Planyo(object):
             if response_code == 0:
                 return r_json
             elif response_code == 1:
+                # authentication error (e.g. invalid API key) or invalid method
                 response.status_code = 401
                 raise requests.HTTPError(response=response)
             elif response_code == 3:
-                raise ValueError('Invalid input data.')
+                # invalid input data
+                response.status_code = 400
+                raise requests.HTTPError(response=response)
             elif response_code == 4:
-                raise ValueError('Other method error, please check method documentation or contact support.')
+                # other error from the method you're calling
+                response.status_code = 500
+                raise requests.HTTPError(response=response)
             elif response_code == 5:
+                # call rejected because of API overuse; please see below for the allowed limits
                 response.status_code = 429
                 raise requests.HTTPError(response=response)
             elif response_code == 6:
+                # fatal error (could occur e.g. if the call takes too long to complete)
                 response.status_code = 500
                 raise requests.HTTPError(response=response)
             else:
